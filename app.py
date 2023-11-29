@@ -1,12 +1,19 @@
 from flask import Flask, request, Response
 from twilio.twiml.voice_response import VoiceResponse
 from twilio.rest import Client
+from dotenv import load_dotenv
+import os
+
+# Load environment variables from .env file
+load_dotenv()
 
 app = Flask(__name__)
 
-# Your Twilio Account SID and Auth Token
-account_sid = 'ACadb978b44431b43d68d9b27250fe80b7'
-auth_token = '3327609ed7cc170a052942ca65f5fff1'
+# Twilio credentials from environment variables
+account_sid = os.getenv("TWILIO_ACCOUNT_SID")
+auth_token = os.getenv("TWILIO_AUTH_TOKEN")
+twilio_phone_number = os.getenv("TWILIO_PHONE_NUMBER")
+
 client = Client(account_sid, auth_token)
 
 @app.route('/twilio/voice', methods=['POST'])
@@ -21,7 +28,7 @@ def make_call():
     call = client.calls.create(
         twiml='<Response><Say>Hello, this is an outbound Twilio voice call!</Say></Response>',
         to=to_phone_number,
-        from_='your_twilio_phone_number'
+        from_=twilio_phone_number
     )
     return f'Call initiated. SID: {call.sid}'
 
